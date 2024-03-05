@@ -1,0 +1,1 @@
+Sentiment Analysis on the Amazon Review Data (2018). Objective: Classify the sentiment of reviews as positive, negative, or neutral.
