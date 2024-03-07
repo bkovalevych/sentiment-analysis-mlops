@@ -7,7 +7,7 @@ class AppSettings:
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(AppSettings, cls).__new__(cls)
-            cls._instance.config_path = "sentimentanalysismlops/config.json"
+            cls._instance.config_path = "./config.json"
             cls.config = cls._instance._read_config()
         return cls._instance
 

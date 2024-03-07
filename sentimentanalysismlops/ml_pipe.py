@@ -2,6 +2,7 @@ from amazon_reviews_dataset import AmazonReviewsDataset
 from torch.utils.data import DataLoader
 import logging as log
 
+from sentimentanalysismlops.strongTypes.ml_mode import MlMode
 from sentimentanalysismlops.strongTypes.review_item import ReviewItem
 
 
@@ -9,5 +10,23 @@ class MlPipe:
     def __init__(self):
         self.logger = log.getLogger("MlPipe")
         self.logger.warning("pipe init")
-        self.dataset = AmazonReviewsDataset()
-        self.dataloader = DataLoader[ReviewItem](self.dataset, batch_size=self.dataset.batch_size, shuffle=False)
+        dataset_train = AmazonReviewsDataset(MlMode.TRAIN)
+        dataset_test = AmazonReviewsDataset(MlMode.TEST)
+        dataset_val = AmazonReviewsDataset(MlMode.VALIDATION)
+
+        self.dataloader_train = DataLoader[ReviewItem](dataset_train, batch_size=dataset_train.batch_size,
+                                                       shuffle=False)
+        self.dataloader_test = DataLoader[ReviewItem](dataset_test, batch_size=dataset_test.batch_size,
+                                                      shuffle=False)
+
+        self.dataloader_val = DataLoader[ReviewItem](dataset_val, batch_size=dataset_val.batch_size,
+                                                     shuffle=False)
+        tr = self.count_len(self.dataloader_train)
+        test = self.count_len(self.dataloader_test)
+        valid = self.count_len(self.dataloader_val)
+
+    def count_len(self, dataloader: DataLoader):
+        c_train = 0
+        for _ in dataloader:
+            c_train += 1
+        return c_train
