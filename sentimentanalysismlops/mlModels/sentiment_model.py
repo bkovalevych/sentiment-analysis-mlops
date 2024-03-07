@@ -1,5 +1,3 @@
-import torch
-import transformers
 import torch.nn as nn
 from transformers.models.bert.modeling_bert import BertModel
 transformer_name = "bert-base-uncased"
