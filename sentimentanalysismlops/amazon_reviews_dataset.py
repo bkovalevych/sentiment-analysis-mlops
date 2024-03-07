@@ -10,11 +10,14 @@ from tqdm import tqdm
 from torch.utils.data import IterableDataset
 from appsettings import AppSettings
 from typing import Iterable
+
+from strongTypes.ml_mode import MlMode
 from strongTypes.review_item import ReviewItem
 
 
 class AmazonReviewsDataset(IterableDataset[ReviewItem]):
-    def __init__(self):
+    def __init__(self, ml_mode: MlMode):
+        self.ml_mode = ml_mode
         self.logger = log.getLogger("AmazonReviewsDataset")
         self.logger.warning("Started AmazonReviewsDataset")
         self.config = AppSettings()
@@ -51,6 +54,9 @@ class AmazonReviewsDataset(IterableDataset[ReviewItem]):
 
     def parse(self) -> Iterable[ReviewItem]:
         g_file = gzip.open(self.file_path, 'rb')
+        test_ratio = self.config['test_percent']
+        train_ratio = self.config['train_percent']
+        total = 10
         for index, item in enumerate(g_file):
             item = json.loads(item)
 
@@ -58,7 +64,12 @@ class AmazonReviewsDataset(IterableDataset[ReviewItem]):
             review_text = item.get('reviewText', '')
             verified = item.get('verified', False)
             summary = item.get('summary', '')
-            yield ReviewItem(index + 1, overall, review_text, verified, summary)
+            if self.ml_mode.value == MlMode.TRAIN.value and index % total < total * train_ratio:
+                yield ReviewItem(index + 1, overall, review_text, verified, summary)
+            elif self.ml_mode.value == MlMode.TEST.value and total * train_ratio <= index % total < total:
+                yield ReviewItem(index + 1, overall, review_text, verified, summary)
+            elif self.ml_mode.value == MlMode.VALIDATION.value and index % total == 0:
+                yield ReviewItem(index + 1, overall, review_text, verified, summary)
 
     def __iter__(self):
         return iter(self.parse())
