@@ -56,7 +56,11 @@ class AmazonReviewsDataset(IterableDataset[ReviewItem]):
         g_file = gzip.open(self.file_path, 'rb')
         test_ratio = self.config['test_percent']
         train_ratio = self.config['train_percent']
+
         total = 10
+        train_boundary = total * train_ratio
+        test_boundary = train_boundary + total * test_ratio
+
         for index, item in enumerate(g_file):
             item = json.loads(item)
 
@@ -64,11 +68,13 @@ class AmazonReviewsDataset(IterableDataset[ReviewItem]):
             review_text = item.get('reviewText', '')
             verified = item.get('verified', False)
             summary = item.get('summary', '')
-            if self.ml_mode.value == MlMode.TRAIN.value and index % total < total * train_ratio:
+            mod = index % total
+
+            if self.ml_mode.value == MlMode.TRAIN.value and mod < train_boundary:
                 yield ReviewItem(index + 1, overall, review_text, verified, summary)
-            elif self.ml_mode.value == MlMode.TEST.value and total * train_ratio <= index % total < total:
+            elif self.ml_mode.value == MlMode.TEST.value and train_boundary <= mod < test_boundary:
                 yield ReviewItem(index + 1, overall, review_text, verified, summary)
-            elif self.ml_mode.value == MlMode.VALIDATION.value and index % total == 0:
+            elif self.ml_mode.value == MlMode.VALIDATION.value and test_boundary <= mod:
                 yield ReviewItem(index + 1, overall, review_text, verified, summary)
 
     def __iter__(self):

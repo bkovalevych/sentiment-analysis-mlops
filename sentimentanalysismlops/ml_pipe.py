@@ -21,12 +21,9 @@ class MlPipe:
 
         self.dataloader_val = DataLoader[ReviewItem](dataset_val, batch_size=dataset_val.batch_size,
                                                      shuffle=False)
-        tr = self.count_len(self.dataloader_train)
-        test = self.count_len(self.dataloader_test)
-        valid = self.count_len(self.dataloader_val)
 
     def count_len(self, dataloader: DataLoader):
         c_train = 0
         for _ in dataloader:
-            c_train += 1
+            c_train += dataloader.batch_size
         return c_train
