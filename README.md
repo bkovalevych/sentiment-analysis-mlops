@@ -23,6 +23,9 @@ Here is example of configuration. the name of file is `config.json`
   "model_path": "./model_2024-03-13_epoch_2.ptn" // path to state dict of the model. It is used for eval
 }
 ```
+## Model Weights
+You can download weights of the trained model and place it into root of the project. Make sure that name of file is matched with `model_path` in `config.json`
+- https://drive.google.com/file/d/1xTNxy8Y86qEvuB5FCPtR44p-Mz7NrANh/view?usp=sharing
 
 ## Dataset
 Classification is based on Amazon Review Data (2018). You can find it by link: 
