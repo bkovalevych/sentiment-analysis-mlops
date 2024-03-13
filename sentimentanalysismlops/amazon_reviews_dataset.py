@@ -37,9 +37,9 @@ class AmazonReviewsDataset(IterableDataset[ReviewItem]):
             self.download_file(temp_path)
             os.rename(temp_path, self.file_path)
         else:
-            self.logger.warning("file \"%s\" already exists", self.file_path)
+            self.logger.warning("mode: %s ,file \"%s\" already exists", self.ml_mode, self.file_path)
 
-    def download_file(self, path_to_file):
+    def download_file(self, path_to_file: str):
         response = requests.get(self.config['dataset_url'], stream=True)
         total_size_in_bytes = int(response.headers.get('content-length', 0))
         chunk_size = 1024
