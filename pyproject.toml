@@ -1,22 +1,22 @@
 [tool.poetry]
-name = "SentimentAnalysisMLOPS"
+name = "sentiment_analysis_MLOPS"
 version = "1.0.0"
 description = "Sentiment Analysis on the Amazon Review Data (2018). Objective: Classify the sentiment of reviews as positive, negative, or neutral."
 authors = ["Bohdan <bohdan.kovalevych@nure.ua>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
-ruff = "^0.3.1"
-torch = "^2.0.0"
-numpy = "^1.26.4"
-pandas = "^2.2.1"
-tensorboard = "^2.16.2"
-matplotlib = "^3.8.3"
-tqdm = "^4.66.2"
-pyyaml = "^6.0.1"
-transformers = "^4.38.2"
-scikit-learn = "^1.4.1.post1"
+python = "3.11"
+ruff = "0.3.1"
+torch = "2.0.0"
+numpy = "1.26.4"
+pandas = "2.2.1"
+tensorboard = "2.16.2"
+matplotlib = "3.8.3"
+tqdm = "4.66.2"
+pyyaml = "~6.0"
+transformers = "4.38.2"
+scikit-learn = "1.4.1.post1"
 
 
 [build-system]

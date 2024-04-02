@@ -13,9 +13,14 @@ from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 import torch
 import json
 
-from mlModels.sentiment_model import SentimentModel, transformer_name
-from strongTypes.ml_mode import MlMode
-from strongTypes.review_item import ReviewItem
+from ml_models.sentiment_model import SentimentModel, transformer_name
+from strong_types.ml_mode import MlMode
+from strong_types.review_item import ReviewItem
+
+
+def save_metric(save_path: str, metric: dict):
+    with open(save_path, 'w') as json_file:
+        json.dump(metric, json_file, indent=4)
 
 
 class MlPipe:
@@ -26,14 +31,12 @@ class MlPipe:
 
         dataset_train = AmazonReviewsDataset(MlMode.TRAIN)
         dataset_test = AmazonReviewsDataset(MlMode.TEST)
-        dataset_val = AmazonReviewsDataset(MlMode.VALIDATION)
 
         self.dataloader_train = DataLoader[ReviewItem](dataset_train, batch_size=dataset_train.batch_size,
                                                        shuffle=False)
         self.dataloader_test = DataLoader[ReviewItem](dataset_test, batch_size=dataset_test.batch_size,
                                                       shuffle=False)
-        self.dataloader_val = DataLoader[ReviewItem](dataset_val, batch_size=dataset_val.batch_size,
-                                                     shuffle=False)
+
         self.model = SentimentModel(6).to(self.device)
         self.tokenizer = BertTokenizer.from_pretrained(transformer_name)
         self.optimizer = Adam(self.model.parameters(), lr=5e-5)
@@ -58,7 +61,7 @@ class MlPipe:
         avg_loss = total_loss / total_count
         return avg_loss
 
-    def evaluate(self):
+    def test(self):
         self.model.eval()
         total_loss = 0
         total_count = 0
@@ -66,7 +69,7 @@ class MlPipe:
         all_labels = []
 
         with torch.no_grad():
-            for batch in self.dataloader_val:
+            for batch in self.dataloader_test:
                 total_count += self.dataloader_train.batch_size
                 inputs = self.tokenizer(batch.reviewText, padding=True, truncation=True, return_tensors="pt",
                                         max_length=512).to(self.device)
@@ -97,17 +100,13 @@ class MlPipe:
             try:
                 self.logger.info("Epoch %s/%s", epoch + 1, epochs)
                 self.train_epoch()
-                metrics = self.evaluate()
+                metrics = self.test()
                 self.logger.warning("Metrics: %s", metrics)
                 self.save_model(f"./data/model_{datetime.date.today()}_epoch_{epoch + 1}.ptn")
-                self.save_metric(f"./data/model_{datetime.date.today()}_epoch_{epoch + 1}.json", metrics)
+                save_metric(f"./data/model_{datetime.date.today()}_epoch_{epoch + 1}.json", metrics)
             except BaseException:
                 self.save_model(f"./data/interrupted_{datetime.date.today()}_epoch{epoch + 1}.ptn")
                 raise
-
-    def save_metric(self, save_path: str, metric: dict):
-        with open(save_path, 'w') as json_file:
-            json.dump(metric, json_file, indent=4)
 
     def save_model(self, save_path: str):
         torch.save(self.model.state_dict(), save_path)

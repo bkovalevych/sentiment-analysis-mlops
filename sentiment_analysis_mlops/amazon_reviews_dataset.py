@@ -11,8 +11,8 @@ from torch.utils.data import IterableDataset
 from appsettings import AppSettings
 from typing import Iterable
 
-from strongTypes.ml_mode import MlMode
-from strongTypes.review_item import ReviewItem
+from strong_types.ml_mode import MlMode
+from strong_types.review_item import ReviewItem
 
 
 class AmazonReviewsDataset(IterableDataset[ReviewItem]):
