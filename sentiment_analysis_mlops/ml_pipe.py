@@ -13,9 +13,9 @@ from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 import torch
 import json
 
-from mlModels.sentiment_model import SentimentModel, transformer_name
-from strongTypes.ml_mode import MlMode
-from strongTypes.review_item import ReviewItem
+from ml_models.sentiment_model import SentimentModel, transformer_name
+from strong_types.ml_mode import MlMode
+from strong_types.review_item import ReviewItem
 
 
 class MlPipe:
